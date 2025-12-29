@@ -41,6 +41,7 @@ export function AdminTable({ users, setUsers, fetchUsers, API }) {
     }
   };
 
+  // user._id
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
     await axios.delete(`${API}/${id}`);
@@ -87,13 +88,17 @@ export function AdminTable({ users, setUsers, fetchUsers, API }) {
           className="bg-white mx-1 w-32 px-2 rounded border"
           placeholder="Email"
         />
-        <input
+        <select
           onChange={handleChange}
           value={form.role}
           name="role"
+          required
           className="bg-white mx-1 w-32 px-2 rounded border"
-          placeholder="Role"
-        />
+        >
+          <option value="" disabled>Select Role</option>
+          <option value="user">user</option>
+          <option value="admin">admin</option>
+        </select>
         <input
           onChange={handleChange}
           value={form.password}
@@ -139,12 +144,16 @@ export function AdminTable({ users, setUsers, fetchUsers, API }) {
                     />
                   </td>
                   <td className="border p-2 ">
-                    <input
-                      value={editForm.role}
+                    <select
                       onChange={handleEditChange}
+                      value={editForm.role}
                       name="role"
-                      className="bg-white w-24 px-2 rounded border"
-                    />
+                      required
+                      className="bg-white mx-1 w-32 px-2 rounded border"
+                    >
+                      <option value="user">user</option>
+                      <option value="admin">admin</option>
+                    </select>
                   </td>
                   <td className="border p-2 ">
                     <button

@@ -5,6 +5,8 @@ import axios from "axios";
 
 // const API = "https://67eca027aa794fb3222e43e2.mockapi.io/members";
 // const API = "http://localhost:3000/api/v2/users";
+
+// import API from .env
 const API = import.meta.env.VITE_API_URL;
 
 export default function Home() {
