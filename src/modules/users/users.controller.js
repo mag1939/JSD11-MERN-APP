@@ -41,7 +41,7 @@ export const deleteUser1 = (req, res) => {
     }
 }
 
-//  ✅ route handler: get a single user by id from the database
+// ✅ route handler: get a single user by id from the database
 export const getUser2 = async (req, res) => {
     const { id } = req.params;
 
@@ -97,7 +97,8 @@ export const createUser2 = async (req, res) => {
 
     try {
         // await ถ้าไม่ผ่านก็จะข้ามไป catch error ทันที
-        // ถ้าสำเร็จก็ สร้าง document ส่งไปที่ database -> collection "users"
+        // ถ้าสำเร็จก็ สร้าง "User" document ส่งไปที่ mongoDB_database -> collection "users"
+        // mongodb will automatically "create" "users-collection" (มันเติม s ให้เอง wow!)
         const doc = await User.create({username, email, password, role});
 
         // แปลง doc ที่ได้มาดลับเป็น js แล้วแก้ไขด้วยการลบ password ทิ้งก่อน ระแวงเพื่อความปลอดภัย ก่อน return เป็น json กลับมา

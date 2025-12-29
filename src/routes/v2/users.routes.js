@@ -6,8 +6,10 @@ import {
     getUsers2,
     updateUser2} from "../../modules/users/users.controller.js";
 
+//  3rd route
 export const router = Router();
 
+// all the functions "Route Handler / Controller"
 router.get("/", getUsers2);
 router.post("/", createUser2);
 router.get("/:id", getUser2)
