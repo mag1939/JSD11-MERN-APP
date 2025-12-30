@@ -9,7 +9,7 @@ import {
 //  3rd route
 export const router = Router();
 
-// all the functions "Route Handler / Controller"
+// endpoint routes with the "Route Handler / Controller" function
 router.get("/", getUsers2);
 router.post("/", createUser2);
 router.get("/:id", getUser2)

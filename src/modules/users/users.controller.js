@@ -6,14 +6,11 @@ import { json } from "express";
 // Refactored GET /users endpoint to implement separation of concerns (SOC)
 // The all of functions in this file is called "Route Handler / Controller"
 
-
-// ❌ route handler: get all users (mock)
+// 🔴 V1
 export const getUsers1 = (req, res) => {
     res.status(200).json(users);
     // console.log(res);
 }
-
-// ❌ route handler: create a new user (mock)
 export const createUser1 = (req, res) => {
     // req.body ข้อมูลที่มาจาก body ต้องเป็ฯในรูปแบบ JS lang เพราะฉะนั้นอย่าลืมแปลงจาก json เป็น JS
     const {name, email} = req.body;
@@ -27,8 +24,6 @@ export const createUser1 = (req, res) => {
     users.push(newUser);
     res.status(201).json(newUser);
 }
-
-// ❌ route handler: delete a user (mock)
 export const deleteUser1 = (req, res) => {
     const userId = req.params.id;
     const userIndex = users.findIndex((user) => user.id === userId);
@@ -41,18 +36,17 @@ export const deleteUser1 = (req, res) => {
     }
 }
 
-// ✅ route handler: get a single user by id from the database
-export const getUser2 = async (req, res) => {
+// 🟢 V2
+// route handler: get a single user by id from the database
+export const getUser2 = async (req, res, next) => {
     const { id } = req.params;
 
     try {
         const doc = await User.findById(id).select("-password");
 
         if (!doc) {
-            return res.status(404).json({
-                success: false,
-                error: "User not found...",
-            });
+            const error = new Error("User not found");
+            return next(error);
         }
 
         return res.status(200).json({
@@ -60,15 +54,14 @@ export const getUser2 = async (req, res) => {
             data: doc,
         });
     } catch (error) {
-        return res.status(500).json({
-                success: false,
-                error: "Failed to get user.",
-            });
+        error.name = error.name || "DatabaseError";
+        error.status = 500;
+        error.message = error.message || "Failed to get a user"
+        return next(error);
     }
 }
-
-// ✅ route handler: get all users in the database
-export const getUsers2 = async (req, res) => {
+// route handler: get all users in the database
+export const getUsers2 = async (req, res, next) => {
     try {
         const users = await User.find().select("-password");
 
@@ -77,22 +70,21 @@ export const getUsers2 = async (req, res) => {
             data: users,
         });
     } catch (error) {
-        return res.status(500),json({
-            success: false,
-            error: "Failed to get users..."
-        });
+        // error.name = error.name || "DatabaseError";
+        // error.status = 500;
+        // error.message = error.message || "Failed to get users"
+        return next(error);
     }
 }
-
-// ✅ route handler: create a new user in the database
-export const createUser2 = async (req, res) => {
+// route handler: create a new user in the database
+export const createUser2 = async (req, res, next) => {
     const {username, email, password, role} = req.body;
 
     if (!username || !email || !password) {
-        return res.status(400).json({
-                success: false,
-                error: "Username, email and password are required.",
-        });
+        const error = new Error("Username, email and password are required.");
+        error.name = "ValidationError"
+        error.status = 400;
+        return next(error);
     }
 
     try {
@@ -111,31 +103,27 @@ export const createUser2 = async (req, res) => {
             });
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(409).json({
-                    success: false,
-                    error: "Email already in use.",
-                });
+            error.status = 409;
+            error.name = "DuplicateKeyError";
+            error.message = "Email already in use.";
+            return next(error);
         }
 
-        return res.status(500).json({
-                success: false,
-                error: "Failed to create user.",
-            });
+        error.name = error.name || "DatabaseError";
+        error.message = error.message || "Failed to create a user.";
+        return next(error);
     }
 }
-
-// ✅ route handler: delete a user in the database
-export const deleteUser2 = async (req, res) => {
+// route handler: delete a user in the database
+export const deleteUser2 = async (req, res, next) => {
     const { id } = req.params;
 
     try {
         const deleted = await User.findByIdAndDelete(id);
 
         if (!deleted) {
-            return res.status(404).json({
-                success: false,
-                error: "User not found...",
-            })
+            const error = new Error("User not found...");
+            return next(error);
         }
 
         return res.status(200).json({
@@ -143,15 +131,12 @@ export const deleteUser2 = async (req, res) => {
             data: null,
         })
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: "Failed to delete user...",
-        })
+        // error.message = error.message || "Failed to delete user...";
+        return next(error);
     }
 }
-
-// ✅ route handler: update user database
-export const updateUser2 = async (req, res) => {
+// route handler: update user database
+export const updateUser2 = async (req, res, next) => {
     const { id } = req.params;
     const body = req.body;
 
@@ -159,10 +144,8 @@ export const updateUser2 = async (req, res) => {
         const updated = await User.findByIdAndUpdate(id, body);
 
         if (!updated) {
-            return res.status(404).json({
-                success: false,
-                error: "User not found...",
-            });
+            const error = new Error("User not found...");
+            return next(error);
         }
 
         const safe = updated.toObject();
@@ -175,15 +158,15 @@ export const updateUser2 = async (req, res) => {
 
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(409).json({
-                    success: false,
-                    error: "Email already in use.",
-                });
+            // error.status = 409;
+            // error.name = "DuplicateKeyError";
+            // error.message = "Email already in use.";
+            return next(error);
         }
 
-        return res.status(500).json({
-                success: false,
-                error: "Failed to update user.",
-            });
+        // error.name = error.name || "DatabaseError";
+        // error.message = error.message || "Failed to update a user.";
+        return next(error);
     }
 }
+
