@@ -20,6 +20,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // convert json format to JS
 app.use(express.json());
+// set root dir
+app.get("/", (req, res) => {
+    res.send("Never gonna give you up~")
+})
 // next route!
 app.use("/api", apiRoutes);
 
