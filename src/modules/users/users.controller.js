@@ -56,7 +56,7 @@ export const getUser2 = async (req, res, next) => {
     } catch (error) {
         error.name = error.name || "DatabaseError";
         error.status = 500;
-        error.message = error.message || "Failed to get a user"
+        error.message = error.message || "Failed to get a user";
         return next(error);
     }
 }
@@ -82,7 +82,7 @@ export const createUser2 = async (req, res, next) => {
 
     if (!username || !email || !password) {
         const error = new Error("Username, email and password are required.");
-        error.name = "ValidationError"
+        error.name = "ValidationError";
         error.status = 400;
         return next(error);
     }
