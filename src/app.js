@@ -11,7 +11,7 @@ export const app = express();
 
 // -----------------------------Middleware------------------------------
 
-// Bypass proxy from deploy services like (Vercel, Render)
+// Bypass user proxy enter our sites from deployed services like (Vercel, Render)
 app.set("trust proxy", 1);
 
 // Global middleware, inside has so many middlewares that make your app safer?, it will set your HTTP header
@@ -36,7 +36,7 @@ app.use(requestLimiter());
 // convert json format to JS
 app.use(express.json());
 
-// Middleware to parse cookies (Reqiure for cookie-base authentication)
+//  automatically reads incoming HTTP request headers, extracts cookie data, and makes it easily accessible as an object
 app.use(cookieParser());
 
 // set root dir
