@@ -31,7 +31,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // request Limiter
-app.use(requestLimiter());
+app.use(requestLimiter);
 
 // convert json format to JS
 app.use(express.json());
