@@ -1,16 +1,36 @@
+### "email": "hny2026@example.com"
+### "password": "salty112"
+
 ### GET request to read all users
 GET http://localhost:3000/api/v2/users
 
 
 ### POST request to create new users
-POST http://localhost:3000/api/v1/users
+POST http://localhost:3000/api/v2/users
 Content-Type: application/json
 
 {
-    "username": "เชร็ค",
-    "email": "SHrek@example.com",
-    "password": "shrek1234"
+    "username": "hhkp",
+    "email": "hny2026@example.com",
+    "password": "salty112",
+    "role": "admin"
 }
 
 ### DELETE request
-DELETE http://localhost:3000/api/v1/users/4
+DELETE http://localhost:3000/api/v2/users/4
+
+
+### POST Login a user
+POST http://localhost:3000/api/v2/users/auth/cookie/login
+Content-Type: application/json
+
+{
+    "email": "hny2026@example.com",
+    "password": "salty112"
+}
+
+### POST Logout a user
+POST http://localhost:3000/api/v2/users/auth/cookie/logout
+
+### GET Check user authentication
+GET http://localhost:3000/api/v2/users/auth/cookie/me
