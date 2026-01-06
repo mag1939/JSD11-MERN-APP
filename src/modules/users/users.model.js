@@ -1,5 +1,6 @@
 // a data model is created from data schema(แผงผังหรือเป็นโครงของ data ของเราว่าเก็ฐอะไรบ้าง)
  import mongoose from "mongoose";
+ import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
     // เมื่อส่งข้อมูลเข้ามา ก็จะมาเทียบกับ schema ที่เขียนมาว่าตรงไหมถึงจะผ่านไปขั้นตอนต่อไป
@@ -13,6 +14,15 @@ const userSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+// hash password one-way but can inspect it
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) {
+        return
+    };
+
+    this.password = await bcrypt.hash(this.password, 10);
+});
 
 // ตัวแปรที่เก็บ schema(แม่แบบ) จะใช้เป็น uppercase
 // mongoose.model() จะนำแม่แบบ above "userSchema" นำมาใช้เป็นตัวเช็ค
