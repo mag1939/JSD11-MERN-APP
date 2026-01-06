@@ -2,20 +2,16 @@ import { useEffect, useState } from "react";
 import { UserTable } from "../components/UserTable";
 import { AdminTable } from "../components/AdminTable";
 import axios from "axios";
-
-// const API = "https://67eca027aa794fb3222e43e2.mockapi.io/members";
-// const API = "http://localhost:3000/api/v2/users";
-
-// import API from .env
-const API = import.meta.env.VITE_API_URL;
+import { useOutletContext } from "react-router-dom";
 
 export default function Home() {
+  const {user, authLoading, apiBase} = useOutletContext();
   const [view, setView] = useState(null);
   const [users, setUsers] = useState([]);
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(API);
+      const res = await axios.get(apiBase);
       setUsers(res.data.data);
     } catch {
       alert("Failed to fetch users");
@@ -28,10 +24,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-6 gap-y-6 flex flex-col justify-start w-full">
+
       <section className="mt-20 text-5xl font-extrabold text-center">
         <h1>Generation Thailand</h1>
         <h1>React Assessment</h1>
       </section>
+
       <section className="flex justify-center gap-x-3 font-bold">
         <button
           onClick={() => setView("user")}
@@ -46,21 +44,32 @@ export default function Home() {
           Admin Section
         </button>
       </section>
+
       <section className="w-full flex justify-center gap-x-3">
-        {view === "user" ? (
-          <section className=" p-5  flex">
-            <UserTable users={users} />
-          </section>
-        ) : view === "admin" ? (
-          <section className=" p-5  flex">
-            <AdminTable
-              users={users}
-              setUsers={setUsers}
-              fetchUsers={fetchUsers}
-              API={API}
-            />
-          </section>
-        ) : null}
+        {/* conditional rendering */}
+        {
+          view === "user" ? (
+            <section className=" p-5  flex">
+              <UserTable users={users} />
+            </section>
+          )
+          : view === "admin" ? (
+            <section className=" p-5  flex">
+              {
+                authLoading ? (<div>Checking user auth...</div>)
+                : user ? (<AdminTable
+                  users={users}
+                  setUsers={setUsers}
+                  fetchUsers={fetchUsers}
+                  API={apiBase}
+                />)
+                : (<div>Please login to access Admin Section</div>)
+              }
+
+            </section>
+          )
+          : null
+        }
       </section>
     </div>
   );
