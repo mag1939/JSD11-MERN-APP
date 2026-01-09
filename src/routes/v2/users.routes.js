@@ -4,7 +4,8 @@ import {
     deleteUser2,
     getUser2,
     getUsers2,
-    updateUser2} from "../../modules/users/users.controller.js";
+    updateUser2,
+    askUsers2} from "../../modules/users/users.controller.js";
 import { User } from "../../modules/users/users.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -15,8 +16,41 @@ export const router = Router();
 
 // Endpoint routes using imported "Route Handler / Controller" functions
 router.get("/", getUsers2);
-router.post("/", authUser, createUser2);
+
+// Check user authentication (check if user has valid token)
+// "authUser middleware" will check first if token is correct or not before run next function
+router.get("/auth/cookie/me", authUser, async (req, res, next) => {
+    try {
+        const userId = req.user.user._id;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(401).json({
+                error: true,
+                message: "Unauthenticated"
+            });
+        }
+
+        res.status(200).json({
+            error: false,
+            user: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+            },
+        })
+    } catch (error) {
+        next(error);
+    }
+});
+
+// RAG (Retrieval-Augmented Generation)
+router.post("/auth/ai/ask", authUser, askUsers2);
+
 router.get("/:id", getUser2)
+router.post("/", authUser, createUser2);
 router.delete("/:id", authUser, deleteUser2);
 router.patch("/:id", authUser, updateUser2);
 
@@ -81,6 +115,7 @@ router.post("/auth/cookie/login", async (req, res, next) => {
             maxAge: 60 * 60 * 1000, // 1 hour
         });
 
+        // ทำการส่งกลับ response back (with cookie above)
         res.status(200).json({
             error: false,
             message: "Login successful",
@@ -115,31 +150,3 @@ router.post("/auth/cookie/logout", async (req, res) => {
     });
 });
 
-// Check user authentication (check if user has valid token)
-// "authUser middleware" will check first if token is correct or not before run next function
-router.get("/auth/cookie/me", authUser, async (req, res, next) => {
-    try {
-        const userId = req.user.user._id;
-
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(401).json({
-                error: true,
-                message: "Unauthenticated"
-            });
-        }
-
-        res.status(200).json({
-            error: false,
-            user: {
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-            },
-        })
-    } catch (error) {
-        next(error);
-    }
-});
