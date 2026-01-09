@@ -1,6 +1,9 @@
 ### "email": "hny2026@example.com"
 ### "password": "salty112"
 
+### "email": "ayy-eye@example.com",
+### "password": "ayy-eye112"
+
 ### GET request to read all users
 GET http://localhost:3000/api/v2/users
 
@@ -10,14 +13,14 @@ POST http://localhost:3000/api/v2/users
 Content-Type: application/json
 
 {
-    "username": "hhkp",
-    "email": "hny2026@example.com",
-    "password": "salty112",
+    "username": "mama",
+    "email": "mama@example.com",
+    "password": "mama112",
     "role": "admin"
 }
 
 ### DELETE request
-DELETE http://localhost:3000/api/v2/users/4
+### DELETE http://localhost:3000/api/v2/users/4
 
 
 ### POST Login a user
@@ -25,8 +28,8 @@ POST http://localhost:3000/api/v2/users/auth/cookie/login
 Content-Type: application/json
 
 {
-    "email": "hny2026@example.com",
-    "password": "salty112"
+    "email": "ayy-eye@example.com",
+    "password": "ayy-eye112"
 }
 
 ### POST Logout a user
@@ -34,3 +37,12 @@ POST http://localhost:3000/api/v2/users/auth/cookie/logout
 
 ### GET Check user authentication
 GET http://localhost:3000/api/v2/users/auth/cookie/me
+
+### Ask AI
+POST http://localhost:3000/api/v2/users/auth/ai/ask
+Content-Type: application/json
+
+{
+    "question": "Who email has m alphabet included?",
+    "topK": 5
+}
