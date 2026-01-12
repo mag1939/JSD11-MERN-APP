@@ -109,6 +109,7 @@ export function AdminTable({ users, setUsers, fetchUsers, API }) {
           name="password"
           className="bg-white mx-1 w-32 px-2 rounded border"
           placeholder="Password"
+          minLength={8}
         />
         <button
           type="submit"
