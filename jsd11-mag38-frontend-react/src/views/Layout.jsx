@@ -1,0 +1,102 @@
+import { Outlet } from "react-router-dom";
+import { Navbar } from "../components/Navbar";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+export function Layout() {
+
+  const apiBase = import.meta.env.VITE_API_URL;
+
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
+
+  // it will run again eveytime apiBase change?
+  // usereffect will run before rendering
+  // run check Authentication
+  useEffect(() => {
+    const checkAuth = async () => {
+      setAuthLoading(true);
+
+      try {
+        const response = await axios.get(`${apiBase}/auth/cookie/me`,
+          {withCredentials: true}
+        );
+
+        setUser(response.data.user);
+
+      } catch (error) {
+        console.log(error);
+        setUser(null);
+      } finally {
+        setAuthLoading(false);
+      }
+    }
+
+    checkAuth();
+
+  }, [apiBase]);
+
+  const login = async ({email, password}) => {
+    setAuthError(null);
+
+    try {
+      // "withCredentials" ถ้า  user มี Token on browser ให้แนบไปด้วยผ่าน http request ไปให้ด้วย
+      const response = await axios.post(
+        `${apiBase}/auth/cookie/login`,
+        {email, password},
+        {withCredentials: true}
+      );
+
+      // every reponse we got back we can pull our data by ".data"
+      setUser(response.data.user);
+
+      return true;
+
+    } catch (error) {
+      const message =
+        error.response.data.message ||
+        error.response.data.error ||
+        error.message;
+
+
+      setAuthError(message || "Login falied...");
+      setUser(null);
+      return null;
+    }
+  };
+
+  const logout = async () => {
+    setAuthError(null);
+
+    try {
+      await axios.post(
+        `${apiBase}/auth/cookie/logout`,
+        {},
+        {withCredentials: true}
+      );
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUser(null);
+    }
+  };
+
+
+
+  return (
+    <div>
+      <Navbar
+        user={user}
+        authLoading={authLoading}
+        authError={authError}
+        login={login}
+        logout={logout}
+      />
+      <section className="bg-amber-200 flex justify-center">
+        <Outlet context={{user, authLoading, apiBase}}/>
+      </section>
+    </div>
+  );
+}
