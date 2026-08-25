@@ -15,6 +15,6 @@ try {
         console.log(chalk.magenta(`Server running on port: ${chalk.redBright(port)} ✅`));
     });
 } catch (error) {
-    console.error("Startup 🥀", error);
+    console.error("Startup falied! 🥀", error);
     process.exit(1);
 }

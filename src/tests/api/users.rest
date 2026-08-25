@@ -13,10 +13,10 @@ POST http://localhost:3000/api/v2/users
 Content-Type: application/json
 
 {
-    "username": "mama",
-    "email": "mama@example.com",
-    "password": "mama112",
-    "role": "admin"
+    "username": "xaxa",
+    "email": "xaxa@example.com",
+    "password": "xaxa1122",
+    "role": "user"
 }
 
 ### DELETE request

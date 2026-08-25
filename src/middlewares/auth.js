@@ -13,7 +13,7 @@ export const authUser = (req, res, next) => {
 
     try {
         const decoded_token = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = {user: {_id: decoded_token.userId}};
+        req.user = {_id: decoded_token.userId};
         next();
 
     } catch (error) {
