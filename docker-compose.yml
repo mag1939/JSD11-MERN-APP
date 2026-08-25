@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: ./jsd11-mag38-backend-express
+      target: dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./jsd11-mag38-backend-express/.env
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+    volumes:
+      - ./jsd11-mag38-backend-express:/app
+      - backend_node_modules:/app/node_modules
+
+  frontend:
+    build:
+      context: ./jsd11-mag38-frontend-react
+      target: dev
+    ports:
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:3000/api/v2/users
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./jsd11-mag38-frontend-react:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  backend_node_modules:
+  frontend_node_modules:
